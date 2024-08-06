@@ -92,5 +92,5 @@ Develop the back-end using Python and Django Rest Framework. Key functionalities
 
 ---
 
-Feel free to modify or extend this documentation as needed.
+
 
