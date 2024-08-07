@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const Login = () => {
-    const [emailOrUsername, setEmailOrUsername] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8000/api-token-auth/', { email: emailOrUsername, password });
+            await axios.post('http://localhost:8000/api/login/', { username: username, password });
             alert('Login successful!');
             // Redirect or update the state as needed
         } catch (error) {
@@ -29,8 +29,8 @@ const Login = () => {
                                 type="text"
                                 className="form-control"
                                 id="emailOrUsername"
-                                value={emailOrUsername}
-                                onChange={(e) => setEmailOrUsername(e.target.value)}
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 required
                             />
                         </div>

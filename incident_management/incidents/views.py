@@ -9,6 +9,8 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import serializers
 
 class CreateUserView(generics.CreateAPIView):
     model = User
@@ -31,18 +33,33 @@ class IncidentDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Incident.objects.filter(reporter=self.request.user)
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+    print(username,password)
+    def validate(self, attrs):
+        # Ensure to call the parent's validate method
+        data = super().validate(attrs)
+        # Add any custom responses here
+        data.update({'custom_field': 'custom_value'})
+        return data
+    
 class LoginView(generics.GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = CustomTokenObtainPairSerializer
-  
+
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = authenticate(username=serializer.validated_data['username'], password=serializer.validated_data['password'])
+        # Access request data directly
+        username = request.data.get('username')
+        password = request.data.get('password')
+        print(f"Attempting to authenticate user: {username}")
+        
+        user = authenticate(username=username, password=password)
         if user is None:
             return Response({'detail': 'Invalid credentials'}, status=400)
+        
         refresh = RefreshToken.for_user(user)
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
-        })    
+        })

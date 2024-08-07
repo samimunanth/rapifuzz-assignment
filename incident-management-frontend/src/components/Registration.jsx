@@ -77,18 +77,21 @@ const Registration = () => {
     };
 
     const handleSubmit = async (e) => {
-       
         e.preventDefault();
         if (!validateForm()) return;
 
         try {
-            console.log(formData);  
-            await axios.post('http://localhost:8000/api/register/', formData);
+            console.log('Submitting form data:', formData);  
+            const response = await axios.post('http://localhost:8000/api/register/', formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            console.log('Response:', response.data);
             alert('Registration successful!');
-            // Redirect or update the state as needed
         } catch (error) {
-            console.error(error);
-            alert('Registration failed!');
+            console.error('Registration error:', error.response?.data || error.message);
+            alert('Registration failed! ' + (error.response?.data?.message || error.message));
         }
     };
 
